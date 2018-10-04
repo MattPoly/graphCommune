@@ -1,5 +1,5 @@
 {
-  "name": "graphCommune",
+  "name": "graph-commune",
   "version": "1.0.0",
   "description": "GraphCommune application",
   "main": "server.js",
