@@ -10,21 +10,18 @@ const HOST = '0.0.0.0';
 const app = express();
 app.set('view engine', 'pug')
 
-
-app.get('/hello', (req, res) => {
-  res.render('index', { title: 'Hey', message: 'Hello there!' });
-});
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  // Get JSON datas
-  let gares = require('./liste-des-gares.json');
+  let myGeoJSON = require('./liste-des-gares.json');
   
-  let garesVoyageurs = gares.filter((gare) => {
-    return gare.fields.voyageurs === "O";
-  })
-  
-  // Send the third train's station
-  res.send(garesVoyageurs[2]);
+  console.log('1 - gares: '+ myGeoJSON.features.length );
+  let garesVoyageurs = myGeoJSON.features.filter((feature) => {
+    return feature.properties.voyageurs === "N" && feature.properties.fret === "O";
+  });
+  console.log('2 - gares: '+ garesVoyageurs.length );
+
+  res.render('index', { title: 'Hey', jsonData: garesVoyageurs });
 });
 
 app.listen(PORT, HOST);

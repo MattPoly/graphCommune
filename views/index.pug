@@ -1,5 +1,29 @@
 html
   head
     title= title
+    script(src='https://unpkg.com/leaflet@1.3.1/dist/leaflet.js')
+    link(rel='stylesheet',href='https://unpkg.com/leaflet@1.3.1/dist/leaflet.css')
+    script(src='scripts/main.js')
+    link(rel='stylesheet',href='styles/main.css')
   body
-    h1= message
+    #map
+    script.
+      var myData = !{JSON.stringify(jsonData)};
+      var myDataGroup = new L.featureGroup();
+      // Create variable to hold map element, give initial settings to map
+      var map = L.map('map',{ center: [47.584, 2.505], zoom: 1});
+      // Add OpenStreetMap tile layer to map element
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+      // Add JSON to map
+      L.geoJson(myData,{
+          onEachFeature: function (feature, layer) {
+              layer.bindPopup(feature.properties.commune);
+              // Add each feature's to a group
+              myDataGroup.addLayer(layer);
+          }
+      }).addTo(map);
+      // Resize the map to fit to the group's bounds
+      map.fitBounds(myDataGroup.getBounds());
+
