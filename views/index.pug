@@ -26,4 +26,5 @@ html
       }).addTo(map);
       // Resize the map to fit to the group's bounds
       map.fitBounds(myDataGroup.getBounds());
+      L.circle([myData[0].geometry.coordinates[1], myData[0].geometry.coordinates[0]],{radius: 75000}).addTo(map);
 
