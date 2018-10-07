@@ -19,12 +19,12 @@ html
       // Add JSON to map
       L.geoJson(myData,{
           onEachFeature: function (feature, layer) {
-              layer.bindPopup(feature.properties.commune);
+              layer.bindPopup(feature.properties.prop0);
               // Add each feature's to a group
               myDataGroup.addLayer(layer);
           }
       }).addTo(map);
       // Resize the map to fit to the group's bounds
       map.fitBounds(myDataGroup.getBounds());
-      L.circle([myData[0].geometry.coordinates[1], myData[0].geometry.coordinates[0]],{radius: 75000}).addTo(map);
+      //L.circle([myData.features[0].geometry.coordinates[1], myData.features[0].geometry.coordinates[0]],{radius: 75000}).addTo(map);
 

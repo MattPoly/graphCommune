@@ -9,19 +9,19 @@ const HOST = '0.0.0.0';
 // App
 const app = express();
 app.set('view engine', 'pug')
-
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  let myGeoJSON = require('./liste-des-gares.json');
-  
-  console.log('1 - gares: '+ myGeoJSON.features.length );
-  let garesVoyageurs = myGeoJSON.features.filter((feature) => {
-    return feature.properties.voyageurs === "N" && feature.properties.fret === "O";
-  });
-  console.log('2 - gares: '+ garesVoyageurs.length );
+// Services
+const geoJsonService = require('./services/geoJsonService');
+const garesService = require('./services/garesService');
 
-  res.render('index', { title: 'Hey', jsonData: garesVoyageurs });
+
+app.get('/', (req, res) => {
+  let gares = garesService.GetGaresFretOnly();
+
+  let graphe = garesService.generateGraph(gares);
+
+  res.render('index', { title: 'GraphCommune', jsonData: geoJsonService.convertGraphToGeoJSON(graphe) });
 });
 
 app.listen(PORT, HOST);
