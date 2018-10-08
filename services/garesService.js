@@ -44,7 +44,7 @@ exports.GetGaresFretOnly = () => {
     let gares = this.getGares();
 
     let garesFiltrees = gares.filter((data) => {
-        return data.geometry !== undefined && data.fields.departement === "Pas-de-Calais";
+        return data.geometry !== undefined && data.fields.departement === "Aisne";
     });
 
     return garesFiltrees;
