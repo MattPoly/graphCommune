@@ -13,7 +13,7 @@ docker build -t custom/graph-commune .
 
 # create docker's container from the image and mount project's folder on the container
 # For Windows, you cannot use $(pwd), you need to replace by the absolute path to your project
-docker create --name graph-commune -v $(pwd):/var/www/graph-commune -p 8080:8080 custom/graph-commune
+docker create --name graph-commune -v $(pwd)/app:/var/www/graph-commune/app -p 8080:8080 custom/graph-commune
 
 # start the container
 docker start graph-commune
