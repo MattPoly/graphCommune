@@ -2,9 +2,9 @@
   "name": "graph-commune",
   "version": "1.0.0",
   "description": "GraphCommune application",
-  "main": "index.js",
+  "main": "app/server.js",
   "scripts": {
-    "start": "nodemon --legacy-watch index.js"
+    "start": "nodemon --legacy-watch app/app.js"
   },
   "dependencies": {
     "express": "4.16.1",
