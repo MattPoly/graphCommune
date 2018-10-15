@@ -43,8 +43,18 @@ exports.getGares = () => {
 exports.GetGaresFretOnly = () => {
     let gares = this.getGares();
 
+    let visitedCommune = {};
+
     let garesFiltrees = gares.filter((data) => {
-        return data.geometry !== undefined && data.fields.departement === "Aisne";
+        if(visitedCommune[data.fields.commune] === undefined) {
+            visitedCommune[data.fields.commune] = data.recordid;
+        }
+        return data.geometry !== undefined
+            && data.fields.commune !== undefined
+            && data.fields.libelle_gare !== undefined
+            && data.fields.voyageurs === "N"
+            && data.fields.fret === "O"
+            && visitedCommune[data.fields.commune] === data.recordid;
     });
 
     return garesFiltrees;

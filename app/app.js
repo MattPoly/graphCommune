@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
     res.render('index', { title: 'GraphCommune'});
   } else if(req.accepts('json')) {
     let gares = garesService.GetGaresFretOnly();
+    console.log("gares:"+gares.length);
   
     let graphe = garesService.generateGraph(gares);
     res.send({

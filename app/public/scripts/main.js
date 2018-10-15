@@ -31,13 +31,6 @@ document.addEventListener('DOMContentLoaded', function () {
         let myData = JSON.parse(data);
         let myDataGroup = new L.featureGroup();
         let geoJsonData = myData.GeoJSON;
-        var myIcon = L.divIcon({
-            className: 'my-div-icon'
-        })
-
-        let geojsonMarkerOptions = {
-            icon: myIcon
-        };
         
         // Add JSON to map
         L.geoJson(geoJsonData, {
@@ -47,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 myDataGroup.addLayer(layer);
             },
             pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, geojsonMarkerOptions);
+                return L.circleMarker(latlng, {radius:"3", color:"#FFA500"});
             }
         }).addTo(map);
         // Resize the map to fit to the group's bounds
