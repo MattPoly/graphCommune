@@ -19,11 +19,18 @@ const garesService = require('./services/garesService');
 
 
 app.get('/', (req, res) => {
-  let gares = garesService.GetGaresFretOnly();
-
-  let graphe = garesService.generateGraph(gares);
-
-  res.render('index', { title: 'GraphCommune', jsonData: geoJsonService.convertGraphToGeoJSON(graphe) });
+  
+  if(req.accepts('text/html')) {
+    res.set('Content-Type', 'text/html');
+    res.render('index', { title: 'GraphCommune'});
+  } else if(req.accepts('json')) {
+    let gares = garesService.GetGaresFretOnly();
+  
+    let graphe = garesService.generateGraph(gares);
+    res.send({
+      "GeoJSON": geoJsonService.convertGraphToGeoJSON(graphe)
+    });
+  }
 });
 
 app.listen(PORT, HOST);
