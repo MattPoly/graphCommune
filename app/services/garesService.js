@@ -34,26 +34,20 @@ exports.calculDistance = (coordinates1, coordinates2) => {
 }
 
 
-exports.getGares = () => {
+exports.getGares = (filters) => {
     let rawData = require('../liste-des-gares.json');
-
-    return rawData;
-}
-
-exports.GetGaresFretOnly = () => {
-    let gares = this.getGares();
-
     let visitedCommune = {};
 
-    let garesFiltrees = gares.filter((data) => {
+
+    let garesFiltrees = rawData.filter((data) => {
         if(visitedCommune[data.fields.commune] === undefined) {
             visitedCommune[data.fields.commune] = data.recordid;
         }
         return data.geometry !== undefined
             && data.fields.commune !== undefined
             && data.fields.libelle_gare !== undefined
-            && data.fields.voyageurs === "N"
-            && data.fields.fret === "O"
+            && data.fields.voyageurs === filters.isVoyageur
+            && data.fields.fret === filters.isFret
             && visitedCommune[data.fields.commune] === data.recordid;
     });
 

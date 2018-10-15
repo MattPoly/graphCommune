@@ -19,20 +19,36 @@ const garesService = require('./services/garesService');
 
 
 app.get('/', (req, res) => {
-  
-  if(req.accepts('text/html')) {
+
+  if (req.accepts('text/html')) {
     res.set('Content-Type', 'text/html');
-    res.render('index', { title: 'GraphCommune'});
-  } else if(req.accepts('json')) {
-    let gares = garesService.GetGaresFretOnly();
-    console.log("gares:"+gares.length);
-  
-    let graphe = garesService.generateGraph(gares);
-    res.send({
-      "GeoJSON": geoJsonService.convertGraphToGeoJSON(graphe)
-    });
+    res.render('index', { title: 'GraphCommune' });
   }
 });
+
+app.get('/graph', (req, res) => {
+  let filters = req.query;
+  console.log( filters);
+
+  let gares = garesService.getGares(filters);
+  console.log("gares:" + gares.length);
+
+  let graphe = garesService.generateGraph(gares);
+
+  res.send({
+    "id": this.generateId(filters),
+    "GeoJSON": geoJsonService.convertGraphToGeoJSON(graphe)
+  });
+
+});
+
+exports.generateId = (filters) => {
+  let id = 'default';
+  if (Object.keys(filters).length !== 0) {
+    id = 'filter';
+  }
+  return id;
+}
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);

@@ -27,7 +27,7 @@ function initMap(id = 'map') {
 document.addEventListener('DOMContentLoaded', function () {
     initMap();
 
-    getAjax('/', function (data) {
+    getAjax('/graph?isFret=O&isVoyageur=N', function (data) {
         let myData = JSON.parse(data);
         let myDataGroup = new L.featureGroup();
         let geoJsonData = myData.GeoJSON;
