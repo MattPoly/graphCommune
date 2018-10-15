@@ -1,7 +1,13 @@
 # graphCommune
 
+## Model
 
-## Using docker
+### Graphe
+- id
+
+## Contributing
+
+### Using docker
 If you are using a Windows OS, you need to install Docker for Windows and use the powershell
 
 ```bash
