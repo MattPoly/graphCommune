@@ -42,12 +42,56 @@ app.get('/graph', (req, res) => {
 
 });
 
+app.get('/resolve', (req, res) => {
+  let queries = req.query;
+  let id = queries.id;
+  let filters = this.generateFilters(id);
+
+  let gares = garesService.getGares(filters);
+  let graphe = garesService.generateGraph(gares);
+
+  res.send({
+    "id": this.generateId(filters),
+    "GeoJSON": geoJsonService.convertGraphToGeoJSON(graphe)
+  });
+
+});
+
 exports.generateId = (filters) => {
-  let id = 'default';
+  let id;
   if (Object.keys(filters).length !== 0) {
-    id = 'filter';
+    id = "";
+    Object.keys(filters).forEach((key) => {
+      id += key + "-";
+      if(typeof filters[key] === "string") {
+        id += filters[key];
+      } else if (typeof filters[key] === "array") {
+        id += filters[key].joint('&');
+      }
+      id += "_";
+    });
+    id = id.substr(0, id.length-1);
+  } else {
+    id = "default";
   }
   return id;
+}
+
+exports.generateFilters = (id) => {
+  let filters = {};
+  let arrayFilter = [];
+  if (id !== "default") {
+    let splitedIds = id.split("_");
+    splitedIds.forEach((splitedId) => {
+      arrayFilter = splitedId.split("-");
+      if(arrayFilter[1].includes("&")) {
+        filters[arrayFilter[0]] = arrayFilter[1].split("&");
+      } else {
+        filters[arrayFilter[0]] = arrayFilter[1];
+      }
+    });
+  }
+  return filters;
 }
 
 app.listen(PORT, HOST);

@@ -37,17 +37,28 @@ exports.calculDistance = (coordinates1, coordinates2) => {
 exports.getGares = (filters) => {
     let rawData = require('../liste-des-gares.json');
     let visitedCommune = {};
+    let isVoyageur = true;
+    let isFret = true;
 
 
     let garesFiltrees = rawData.filter((data) => {
         if(visitedCommune[data.fields.commune] === undefined) {
             visitedCommune[data.fields.commune] = data.recordid;
         }
+
+        if(filters.isVoyageur !== undefined) {
+            isVoyageur = (data.fields.voyageurs === filters.isVoyageur);
+        }
+
+        if(filters.isFret !== undefined) {
+            isFret = (data.fields.fret === filters.isFret);
+        }
+
         return data.geometry !== undefined
             && data.fields.commune !== undefined
             && data.fields.libelle_gare !== undefined
-            && data.fields.voyageurs === filters.isVoyageur
-            && data.fields.fret === filters.isFret
+            && isVoyageur
+            && isFret
             && visitedCommune[data.fields.commune] === data.recordid;
     });
 
