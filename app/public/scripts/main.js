@@ -27,7 +27,7 @@ function initMap(id = 'map') {
 document.addEventListener('DOMContentLoaded', function () {
     initMap();
 
-    getAjax('/graph?isFret=O&isVoyageur=O', function (data) {
+    getAjax('/graph?isFret=N&isVoyageur=O', function (data) {
         let myData = JSON.parse(data);
         let myDataGroup = new L.featureGroup();
         let geoJsonData = myData.GeoJSON;
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //L.circle([geoJsonData.features[0].geometry.coordinates[1], geoJsonData.features[0].geometry.coordinates[0]],{radius: 75000}).addTo(map);
     });
 
-    getAjax('/resolve?id=isFret-O_isVoyageur-N', function (data) {
+    getAjax('/resolve?id=isFret-N_isVoyageur-O', function (data) {
         let myData = JSON.parse(data);
         let myDataGroup = new L.featureGroup();
         let geoJsonData = myData.GeoJSON;
@@ -62,6 +62,27 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             pointToLayer: function (feature, latlng) {
                 return L.circleMarker(latlng, { radius: "3", color: "#FFA500" });
+            }
+        }).addTo(map);
+        // Resize the map to fit to the group's bounds
+        map.fitBounds(myDataGroup.getBounds());
+        //L.circle([geoJsonData.features[0].geometry.coordinates[1], geoJsonData.features[0].geometry.coordinates[0]],{radius: 75000}).addTo(map);
+    });
+
+    getAjax('/testAlgo?id=isFret-N_isVoyageur-O', function (data) {
+        let myData = JSON.parse(data);
+        let myDataGroup = new L.featureGroup();
+        let geoJsonData = myData.path;
+
+        // Add JSON to map
+        L.geoJson(geoJsonData, {
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup(feature.properties.prop0);
+                // Add each feature's to a group
+                myDataGroup.addLayer(layer);
+            },
+            pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng, { radius: "3", color: "#000000" });
             }
         }).addTo(map);
         // Resize the map to fit to the group's bounds

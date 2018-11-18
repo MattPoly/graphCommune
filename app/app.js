@@ -15,6 +15,8 @@ app.set('views', 'app/views');
 // Services
 const geoJsonService = require('./services/geoJsonService');
 const garesService = require('./services/garesService');
+const algoService = require('./services/shortestPathService');
+
 
 
 
@@ -50,10 +52,34 @@ app.get('/resolve', (req, res) => {
   let gares = garesService.getGares(filters);
   let graphe = garesService.generateGraph(gares);
 
+  console.log(graphe);
   res.send({
     "id": this.generateId(filters),
     "GeoJSON": geoJsonService.convertGraphToGeoJSON(graphe)
   });
+
+});
+
+app.get('/testAlgo', (req, res) => {
+  let queries = req.query;
+  let id = queries.id;
+  let filters = this.generateFilters(id);
+  let gares = garesService.getGares(filters);
+  let graphe = garesService.generateGraph(gares);
+
+  let aStarPath = algoService.aStarPath(graphe, '830f890f2af67edca009ec88ad336d0ddd8b63f0', '5b949389012d8427ad9bbecdbfe08586576d1543');
+  //chemin entre beauvoisin et goncelin
+  //let aStarPath = algoService.aStarPath(graphe, '830f890f2af67edca009ec88ad336d0ddd8b63f0', '5b949389012d8427ad9bbecdbfe08586576d1543');
+
+  let path = false;
+  //res.send(aStarPath.path);
+  if (aStarPath.path) path = geoJsonService.convertGraphToGeoJSON(aStarPath.path);
+  res.send({
+    'astarInfo': aStarPath,
+    'path': path,
+    'graph' : graphe
+  });
+
 
 });
 

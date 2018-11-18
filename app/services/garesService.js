@@ -109,5 +109,6 @@ exports.generateGraph = (gares) => {
       i++;
     }
 
+    //console.log(graph);
     return graph;
 }
