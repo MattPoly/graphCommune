@@ -42,15 +42,15 @@ exports.getGares = (filters) => {
 
 
     let garesFiltrees = rawData.filter((data) => {
-        if(visitedCommune[data.fields.commune] === undefined) {
+        if (visitedCommune[data.fields.commune] === undefined) {
             visitedCommune[data.fields.commune] = data.recordid;
         }
 
-        if(filters.isVoyageur !== undefined) {
+        if (filters.isVoyageur !== undefined) {
             isVoyageur = (data.fields.voyageurs === filters.isVoyageur);
         }
 
-        if(filters.isFret !== undefined) {
+        if (filters.isFret !== undefined) {
             isFret = (data.fields.fret === filters.isFret);
         }
 
@@ -78,42 +78,58 @@ exports.generateGraph = (gares) => {
             "coordinates": gare.geometry.coordinates
         };
     });
-    
+
     let garesTotal = gares.length;
     let distanceMinDefault = 5; // km
     let distanceMin = distanceMinDefault;
     let garesProches = [];
-  
+
     let i = 0;
     let gareCourante = {};
-  
-  
-    while(garesTotal !== i) {
-      gareCourante = gares[i];
-    
-      do {
-        garesProches = gares.filter((gare) => {
-          if(gareCourante.recordid !== gare.recordid) {
-            let distance = this.calculDistance(gareCourante.geometry.coordinates, gare.geometry.coordinates);
-            return distance <= distanceMin;
-          } else {
-            return false;
-          }
-        });
-        distanceMin = distanceMin + 5;
-      } while (garesProches.length === 0);
-      
-      distanceMin = distanceMinDefault;
-      graph.successeurs[gareCourante.recordid] = garesProches.map((a) => a.recordid);
 
-      /**
-       * la gare A n'a aucune gare dans son 5km
-       * on cherche donc à 10km et trouvons une gare B, on l'ajoute aux adjacents
-       * la gare B possède des gares dans son 5km, on ne cherche donc pas a 10km,
-       * le chemin B vers n'existe donc pas
-       */
-  
-      i++;
+
+    while (garesTotal !== i) {
+        gareCourante = gares[i];
+
+        do {
+            garesProches = gares.filter((gare) => {
+                if (gareCourante.recordid !== gare.recordid) {
+                    let distance = this.calculDistance(gareCourante.geometry.coordinates, gare.geometry.coordinates);
+                    return distance <= distanceMin;
+                } else {
+                    return false;
+                }
+            });
+            distanceMin = distanceMin + 5;
+        } while (garesProches.length === 0);
+
+        distanceMin = distanceMinDefault;
+
+        if (!graph.successeurs[gareCourante.recordid]){
+            graph.successeurs[gareCourante.recordid] = [];
+        }
+        garesProches.map((a) => {
+            graph.successeurs[gareCourante.recordid].push(a.recordid)
+        });
+
+        garesProches.map(gare => {
+            if (graph.successeurs[gare.recordid]) {
+                if (!graph.successeurs[gare.recordid].indexOf(gareCourante.recordid) === -1) {
+                    graph.successeurs[gare.recordid].push(gareCourante.recordid);
+                    console.log('Aller retour : ' + gare.recordid + ' ' + gareCourante.recordid);
+                }
+            } else {
+                graph.successeurs[gare.recordid] = [gareCourante.recordid];
+            }
+        });
+        /**
+         * la gare A n'a aucune gare dans son 5km
+         * on cherche donc à 10km et trouvons une gare B, on l'ajoute aux adjacents
+         * la gare B possède des gares dans son 5km, on ne cherche donc pas a 10km,
+         * le chemin B vers n'existe donc pas
+         */
+
+        i++;
     }
 
     //console.log(graph);
