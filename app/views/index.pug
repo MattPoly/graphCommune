@@ -11,4 +11,48 @@ html
     script(src='scripts/main.js')
     link(rel='stylesheet',href='styles/main.css')
   body
-    #map
+    div(class="container-fluid")
+      #main(class="row")
+        #display(class="col-sm-3")
+          h5.display-4 Controls
+          
+          .filtres
+            h2.display-5 Types de gares
+            .form-group.row
+
+              label.col-sm-10.col-form-label(for="fret") Fret
+              .col-sm-2
+                input(
+                  type='checkbox'
+                  name='fret'
+                  class='form-control form-control-sm'
+                  checked
+                )
+
+              label.col-sm-10.col-form-label(for="voyageur") Voyageur
+              .col-sm-2
+                input(
+                  type='checkbox'
+                  name='voyageur'
+                  class='form-control form-control-md'
+                  checked
+                )
+            button.btn.btn-sm.btn-primary.btn-block Selectionner
+
+          .gares
+            h2.display-5 Itinéraire
+            .form-group
+              label(for="selectGareDepart") Gare de départ
+              select#selectGareDepart.form-control(disabled)
+            .form-group
+              .arrive
+                label(for="selectGareArrive") Gare d'arrivée
+                select#selectGareArrive.form-control(disabled)
+            .form-group
+              .algo
+                label(for="selectAlgo") Algo
+                select#selectAlgo.form-control(disabled)
+            button.btn.btn-sm.btn-primary.btn-block(disabled) Calculer
+
+        #display(class="col-sm-9")
+          #map
