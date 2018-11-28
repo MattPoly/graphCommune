@@ -5,7 +5,7 @@ html
     script(src='leaflet/leaflet.js')
     link(rel='stylesheet',href='leaflet/leaflet.css')
 
-    script(src='bootstrap/js/bootstrap.min.js')
+    <!-- script(src='bootstrap/js/bootstrap.min.js') -->
     link(rel='stylesheet',href='bootstrap/css/bootstrap.min.css')
 
     script(src='scripts/main.js')
@@ -14,7 +14,7 @@ html
     div(class="container-fluid")
       #main(class="row")
         #display(class="col-sm-3")
-          h5.display-4 Controls
+          h1.display-4 Contrôles
           
           .filtres
             h2.display-5 Types de gares
@@ -34,21 +34,19 @@ html
                 input(
                   type='checkbox'
                   name='voyageur'
-                  class='form-control form-control-md'
+                  class='form-control form-control-sm'
                   checked
                 )
-            button.btn.btn-sm.btn-primary.btn-block Selectionner
+            button.btn.btn-sm.btn-primary.btn-block(onclick="selectType()") Sélectionner
 
           .gares
             h2.display-5 Itinéraire
             .form-group
               label(for="selectGareDepart") Gare de départ
               select#selectGareDepart.form-control(disabled)
-            .form-group
               .arrive
                 label(for="selectGareArrive") Gare d'arrivée
                 select#selectGareArrive.form-control(disabled)
-            .form-group
               .algo
                 label(for="selectAlgo") Algo
                 select#selectAlgo.form-control(disabled)
