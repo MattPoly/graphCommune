@@ -52,7 +52,6 @@ app.get('/resolve', (req, res) => {
   let gares = garesService.getGares(filters);
   let graphe = garesService.generateGraph(gares);
 
-  console.log(graphe);
   res.send({
     "id": this.generateId(filters),
     "GeoJSON": geoJsonService.convertGraphToGeoJSON(graphe)
@@ -67,7 +66,7 @@ app.get('/testAlgo', (req, res) => {
   let gares = garesService.getGares(filters);
   let graphe = garesService.generateGraph(gares);
 
-  let aStarPath = algoService.aStarPath(graphe, '830f890f2af67edca009ec88ad336d0ddd8b63f0', '5b949389012d8427ad9bbecdbfe08586576d1543');
+  let aStarPath = algoService.aStarPath(graphe, '7c71f00ac4e661e60023a737462beff3ddac885e', 'bb9ff5bc4dd40d9a01ec45106b78ca169ba8f53d');
   //chemin entre beauvoisin et goncelin
   //let aStarPath = algoService.aStarPath(graphe, '830f890f2af67edca009ec88ad336d0ddd8b63f0', '5b949389012d8427ad9bbecdbfe08586576d1543');
 

@@ -32,7 +32,7 @@ exports.convertGraphToGeoJSON = (graphe = {}) => {
       let point = points[pointId];
       geoJsonData.features.push({
         "type": "Feature",
-        "geometry": {
+         "geometry": {
           "type": "Point",
           "coordinates": point.coordinates
         },

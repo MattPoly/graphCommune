@@ -12,6 +12,7 @@ function getAjax(url, success) {
 
 let map;
 
+
 function initMap(id = 'map') {
     // Create variable to hold map element, give initial settings to map
     map = L.map(id, { center: [47.584, 2.505], zoom: 1 });
@@ -40,7 +41,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 myDataGroup.addLayer(layer);
             },
             pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, { radius: "3", color: "#FFA500" });
+                //return L.circleMarker(latlng, { radius: "3", color: "#FFA500" });
+                return L.circleMarker(latlng, { radius: "5", color: "#FFA500", fillColor : "#FFA500" });
             }
         }).addTo(map);
         // Resize the map to fit to the group's bounds
@@ -61,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 myDataGroup.addLayer(layer);
             },
             pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, { radius: "3", color: "#FFA500" });
+                return L.circleMarker(latlng, { radius: "3", color: "#FFA500", fillColor: "#FFA500"  });
             }
         }).addTo(map);
         // Resize the map to fit to the group's bounds
@@ -82,7 +84,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 myDataGroup.addLayer(layer);
             },
             pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, { radius: "3", color: "#000000" });
+                return L.circleMarker(latlng, { radius: "6"});
+            },
+            style : {
+                color: "#42f445",
+                fillColor: "#42f445"
             }
         }).addTo(map);
         // Resize the map to fit to the group's bounds

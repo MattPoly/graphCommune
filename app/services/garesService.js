@@ -105,6 +105,13 @@ exports.generateGraph = (gares) => {
       
       distanceMin = distanceMinDefault;
       graph.successeurs[gareCourante.recordid] = garesProches.map((a) => a.recordid);
+
+      /**
+       * la gare A n'a aucune gare dans son 5km
+       * on cherche donc à 10km et trouvons une gare B, on l'ajoute aux adjacents
+       * la gare B possède des gares dans son 5km, on ne cherche donc pas a 10km,
+       * le chemin B vers n'existe donc pas
+       */
   
       i++;
     }

@@ -34,7 +34,6 @@ exports.aStarPath = (graph, start, end) => {
 
         tabNeighbour = graph.successeurs[currentNode];
 
-        console.log(tabNeighbour);
         tabNeighbour.map(neighbour => { //parcours des successeurs
             if (!closedList[neighbour]) { // si la gare est dans la liste fermée il a déjà été analysé, on le passe
                 if (!openList[neighbour]) { // si la gare n'est pas dans la liste ouverte
