@@ -3,10 +3,13 @@ let map;
 let geoJsonGraphLayer;
 let geoJsonGraphLayerOption = {
     onEachFeature: function (feature, layer) {
-        layer.bindPopup(feature.properties.prop0);
+        layer.bindPopup(
+          `<button class='btn btn-sm btn-primary' onclick='setGare("`+feature.properties.id+`","depart")'>Départ</button>
+          <button class='btn btn-sm btn-success' onclick='setGare("`+feature.properties.id+`","arrive")'>Arrivée</button>`
+        );
     },
     pointToLayer: function (feature, latlng) {
-        return L.circleMarker(latlng, { radius: 3, color: "#FFA500", fillColor: "#FFA500" });
+        return L.circleMarker(latlng, { radius: 6, color: "#FFA500", fillColor: "#FFA500" });
     },
     style: function(feature) {
       switch (feature.geometry.type) {
@@ -22,7 +25,7 @@ let geoJsonResolveLayerOption = {
         layer.bindPopup(feature.properties.prop0);
     },
     pointToLayer: function (feature, latlng) {
-        return L.circleMarker(latlng, { radius: 3, color: "#42f445", fillColor: "#42f445" });
+        return L.circleMarker(latlng, { radius: 6, color: "#42f445", fillColor: "#42f445" });
     },
     style: function(feature) {
       switch (feature.geometry.type) {
@@ -33,6 +36,9 @@ let geoJsonResolveLayerOption = {
 };
 
 let gares = [];
+
+let markerGareDepart = L.marker();
+let markerGareArrive = L.marker();
 
 function updateGares() {
   let selectGareDepart = document.getElementById('selectGareDepart');
@@ -45,6 +51,9 @@ function updateGares() {
   while (selectGareArrive.childNodes[1]) {
       selectGareArrive.removeChild(selectGareArrive.childNodes[1]);
   }
+
+  map.removeLayer(markerGareDepart);
+  map.removeLayer(markerGareArrive);
 
   // Sort gares
   gares.sort(function(obj1, obj2) {
@@ -176,4 +185,36 @@ function updateGeoJsonLayer(geoJsonData, layerType = "graph") {
 
   map.fitBounds(layer.getBounds());
 
+}
+
+function marquerGare(id, position = "depart") {
+  if(id !== undefined && id !== "") {
+    let coordinates = gares.find(x => x.id === id).coordinates;
+    switch (position) {
+      case "depart":
+        map.removeLayer(markerGareDepart);
+        markerGareDepart.setLatLng([coordinates[1],coordinates[0]]).addTo(map);
+        break;
+      case "arrive":
+        map.removeLayer(markerGareArrive);
+        markerGareArrive.setLatLng([coordinates[1],coordinates[0]]).addTo(map);
+        break;
+    }
+  } else {
+    map.removeLayer(markerGareDepart);
+    map.removeLayer(markerGareArrive);
+  }
+}
+
+function setGare(id, position = "depart") {
+  let select;
+  switch (position) {
+    case "depart":
+      document.getElementById('selectGareDepart').value = id;
+      break;
+    case "arrive":
+      document.getElementById('selectGareArrive').value = id;
+      break;
+  }
+  marquerGare(id, position);
 }
