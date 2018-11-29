@@ -4,7 +4,7 @@
 
 Feature LineString:
 
-{    
+{
     "type": "Feature",
     "geometry": {
         "type": "LineString",
@@ -21,12 +21,12 @@ Feature LineString:
 exports.convertGraphToGeoJSON = (graphe = {}) => {
     let points = graphe.points;
     let successeursList = graphe.successeurs;
-    
+
     let geoJsonData = {
       "type": "FeatureCollection",
       "features": []
     };
-  
+
     let keys = Object.keys(points);
     keys.forEach((pointId) => {
       let point = points[pointId];
@@ -37,21 +37,22 @@ exports.convertGraphToGeoJSON = (graphe = {}) => {
           "coordinates": point.coordinates
         },
         "properties": {
-          "prop0": point.name
+          "id": point.id,
+          "name": point.name
         }
       });
     });
-  
+
     let gareCourante = {};
     let successeur = {};
     let prop = '';
-    
+
     let successeursListId = Object.keys(successeursList);
     let successeurs = [];
     successeursListId.forEach((successeurId) => {
       gareCourante = points[successeurId];
       successeurs = successeursList[successeurId];
-  
+
       successeurs.forEach((successeurId) => {
         successeur = points[successeurId];
         prop = gareCourante.name + ' - ' + successeur.name;
@@ -69,10 +70,10 @@ exports.convertGraphToGeoJSON = (graphe = {}) => {
           }
         };
         geoJsonData.features.push(successeurGeoJson);
-  
+
       });
-  
+
     });
-  
+
     return geoJsonData;
   }
