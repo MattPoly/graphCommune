@@ -1,10 +1,56 @@
 html
   head
     title= title
-    script(src='https://unpkg.com/leaflet@1.3.4/dist/leaflet.js')
-    link(rel='stylesheet',href='https://unpkg.com/leaflet@1.3.4/dist/leaflet.css')
+
+    script(src='leaflet/leaflet.js')
+    link(rel='stylesheet',href='leaflet/leaflet.css')
+
+    <!-- script(src='bootstrap/js/bootstrap.min.js') -->
+    link(rel='stylesheet',href='bootstrap/css/bootstrap.min.css')
+
     script(src='scripts/main.js')
     link(rel='stylesheet',href='styles/main.css')
   body
-    #map
+    div(class="container-fluid")
+      #main(class="row")
+        #display(class="col-sm-3")
+          h1.display-4 Contrôles
+          
+          .filtres
+            h2.display-5 Types de gares
+            .form-group.row
 
+              label.col-sm-10.col-form-label(for="fret") Fret
+              .col-sm-2
+                input(
+                  type='checkbox'
+                  name='fret'
+                  class='form-control form-control-sm'
+                  checked
+                )
+
+              label.col-sm-10.col-form-label(for="voyageur") Voyageur
+              .col-sm-2
+                input(
+                  type='checkbox'
+                  name='voyageur'
+                  class='form-control form-control-sm'
+                  checked
+                )
+            button.btn.btn-sm.btn-primary.btn-block(onclick="selectType()") Sélectionner
+
+          .gares
+            h2.display-5 Itinéraire
+            .form-group
+              label(for="selectGareDepart") Gare de départ
+              select#selectGareDepart.form-control(disabled)
+              .arrive
+                label(for="selectGareArrive") Gare d'arrivée
+                select#selectGareArrive.form-control(disabled)
+              .algo
+                label(for="selectAlgo") Algo
+                select#selectAlgo.form-control(disabled)
+            button.btn.btn-sm.btn-primary.btn-block(disabled) Calculer
+
+        #display(class="col-sm-9")
+          #map

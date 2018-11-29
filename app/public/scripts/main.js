@@ -1,3 +1,37 @@
+let map;
+let geoJsonGraphLayer;
+let geoJsonGraphLayerOption = {
+    onEachFeature: function (feature, layer) {
+        layer.bindPopup(feature.properties.prop0);
+    },
+    pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, { radius: 3, color: "#FFA500", fillColor: "#FFA500" });
+    },
+    style: function(feature) {
+      switch (feature.geometry.type) {
+          case 'LineString': return {color: "#007BFF", fillColor: "#007BFF"};
+          default:   return {};
+      }
+  }
+};
+
+let geoJsonResolveLayer;
+let geoJsonResolveLayerOption = {
+    onEachFeature: function (feature, layer) {
+        layer.bindPopup(feature.properties.prop0);
+    },
+    pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, { radius: 3, color: "#42f445", fillColor: "#42f445" });
+    },
+    style: function(feature) {
+      switch (feature.geometry.type) {
+          case 'LineString': return {color: "#42f445", fillColor: "#42f445"};
+          default:   return {};
+      }
+  }
+};
+
+
 function getAjax(url, success) {
     var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
     xhr.open('GET', url);
@@ -10,9 +44,6 @@ function getAjax(url, success) {
     return xhr;
 }
 
-let map;
-
-
 function initMap(id = 'map') {
     // Create variable to hold map element, give initial settings to map
     map = L.map(id, { center: [47.584, 2.505], zoom: 1 });
@@ -23,76 +54,68 @@ function initMap(id = 'map') {
     }).addTo(map);
 }
 
-
-
 document.addEventListener('DOMContentLoaded', function () {
     initMap();
 
-    getAjax('/graph?isFret=N&isVoyageur=O', function (data) {
-        let myData = JSON.parse(data);
-        let myDataGroup = new L.featureGroup();
-        let geoJsonData = myData.GeoJSON;
-
-        // Add JSON to map
-        L.geoJson(geoJsonData, {
-            onEachFeature: function (feature, layer) {
-                layer.bindPopup(feature.properties.prop0);
-                // Add each feature's to a group
-                myDataGroup.addLayer(layer);
-            },
-            pointToLayer: function (feature, latlng) {
-                //return L.circleMarker(latlng, { radius: "3", color: "#FFA500" });
-                return L.circleMarker(latlng, { radius: "5", color: "#FFA500", fillColor : "#FFA500" });
-            }
-        }).addTo(map);
-        // Resize the map to fit to the group's bounds
-        map.fitBounds(myDataGroup.getBounds());
-        //L.circle([geoJsonData.features[0].geometry.coordinates[1], geoJsonData.features[0].geometry.coordinates[0]],{radius: 75000}).addTo(map);
-    });
-
-    getAjax('/resolve?id=isFret-N_isVoyageur-O', function (data) {
-        let myData = JSON.parse(data);
-        let myDataGroup = new L.featureGroup();
-        let geoJsonData = myData.GeoJSON;
-
-        // Add JSON to map
-        L.geoJson(geoJsonData, {
-            onEachFeature: function (feature, layer) {
-                layer.bindPopup(feature.properties.prop0);
-                // Add each feature's to a group
-                myDataGroup.addLayer(layer);
-            },
-            pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, { radius: "3", color: "#FFA500", fillColor: "#FFA500"  });
-            }
-        }).addTo(map);
-        // Resize the map to fit to the group's bounds
-        map.fitBounds(myDataGroup.getBounds());
-        //L.circle([geoJsonData.features[0].geometry.coordinates[1], geoJsonData.features[0].geometry.coordinates[0]],{radius: 75000}).addTo(map);
-    });
-
     getAjax('/testAlgo?id=isFret-N_isVoyageur-O', function (data) {
         let myData = JSON.parse(data);
-        let myDataGroup = new L.featureGroup();
         let geoJsonData = myData.path;
 
-        // Add JSON to map
-        L.geoJson(geoJsonData, {
-            onEachFeature: function (feature, layer) {
-                layer.bindPopup(feature.properties.prop0);
-                // Add each feature's to a group
-                myDataGroup.addLayer(layer);
-            },
-            pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, { radius: "6"});
-            },
-            style : {
-                color: "#42f445",
-                fillColor: "#42f445"
-            }
-        }).addTo(map);
-        // Resize the map to fit to the group's bounds
-        map.fitBounds(myDataGroup.getBounds());
-        //L.circle([geoJsonData.features[0].geometry.coordinates[1], geoJsonData.features[0].geometry.coordinates[0]],{radius: 75000}).addTo(map);
+        updateGeoJsonLayer(geoJsonData, "resolve");
     });
 });
+
+function selectType() {
+  if(geoJsonResolveLayer !== undefined) {
+    geoJsonResolveLayer.clearLayers();
+  }
+
+  let isVoyageur = document.querySelector('[name=voyageur]').checked;
+  let isFret = document.querySelector('[name=fret]').checked;
+  let url = "/graph?isFret="+(isFret?"O":"N")+"&isVoyageur="+(isVoyageur?"O":"N")
+
+  getAjax(url, function (data) {
+      let myData = JSON.parse(data);
+      let geoJsonData = myData.GeoJSON;
+      updateGeoJsonLayer(geoJsonData, "graph");
+  });
+}
+
+function updateGeoJsonLayer(geoJsonData, layerType = "graph") {
+  let layer;
+  let layerOption = {};
+
+ // get Layer's Data
+  switch (layerType) {
+    case "graph":
+      layer = geoJsonGraphLayer;
+      layerOption = geoJsonGraphLayerOption;
+      break;
+    case "resolve":
+      layer = geoJsonResolveLayer;
+      layerOption = geoJsonResolveLayerOption;
+      break;
+  }
+
+
+  if(layer !== undefined) {
+    layer.clearLayers();
+    layer.addData(geoJsonData);
+  } else {
+    layer = L.geoJson(geoJsonData, layerOption);
+    layer.addTo(map);
+  }
+
+   // Update Layer's reference
+  switch (layerType) {
+    case "graph":
+      geoJsonGraphLayer = layer;
+      break;
+    case "resolve":
+      geoJsonResolveLayer = layer;
+      break;
+  }
+
+  map.fitBounds(layer.getBounds());
+
+}
