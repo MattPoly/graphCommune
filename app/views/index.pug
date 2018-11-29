@@ -1,6 +1,7 @@
 html
   head
     title= title
+    link(rel="icon",type="image/png",href="favicon.gif")
 
     script(src='leaflet/leaflet.js')
     link(rel='stylesheet',href='leaflet/leaflet.css')
@@ -43,14 +44,17 @@ html
             h2.display-5 Itinéraire
             .form-group
               label(for="selectGareDepart") Gare de départ
-              select#selectGareDepart.form-control(disabled)
+              select#selectGareDepart.form-control
+                option(value="") Sélectionner la gare
               .arrive
                 label(for="selectGareArrive") Gare d'arrivée
-                select#selectGareArrive.form-control(disabled)
+                select#selectGareArrive.form-control
+                  option(value="") Sélectionner la gare
               .algo
                 label(for="selectAlgo") Algo
-                select#selectAlgo.form-control(disabled)
-            button.btn.btn-sm.btn-primary.btn-block(disabled) Calculer
+                select#selectAlgo.form-control
+                  option(value="") Sélectionner l'algo
+            button.btn.btn-sm.btn-primary.btn-block(onclick="resolveGraph()") Calculer
 
         #display(class="col-sm-9")
           #map

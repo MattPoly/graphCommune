@@ -1,4 +1,5 @@
 let map;
+
 let geoJsonGraphLayer;
 let geoJsonGraphLayerOption = {
     onEachFeature: function (feature, layer) {
@@ -31,6 +32,37 @@ let geoJsonResolveLayerOption = {
   }
 };
 
+let gares = [];
+
+function updateGares() {
+  let selectGareDepart = document.getElementById('selectGareDepart');
+  let selectGareArrive = document.getElementById('selectGareArrive');
+
+  // Clean gare selects
+  while (selectGareDepart.childNodes[1]) {
+      selectGareDepart.removeChild(selectGareDepart.childNodes[1]);
+  }
+  while (selectGareArrive.childNodes[1]) {
+      selectGareArrive.removeChild(selectGareArrive.childNodes[1]);
+  }
+
+  // Sort gares
+  gares.sort(function(obj1, obj2) {
+    return obj1.name > obj2.name;
+  });
+
+  // Add options
+  let option;
+  for(let i in gares) {
+    option = document.createElement("option");
+    option.value = gares[i].id;
+    option.text = gares[i].name;
+
+    selectGareDepart.appendChild(option);
+    // Créer un clone du noeud "option"
+    selectGareArrive.appendChild(option.cloneNode(true));
+  }
+}
 
 function getAjax(url, success) {
     var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
@@ -78,7 +110,33 @@ function selectType() {
       let myData = JSON.parse(data);
       let geoJsonData = myData.GeoJSON;
       updateGeoJsonLayer(geoJsonData, "graph");
+      gares = [];
+      for(let gare in myData.graph.points) {
+        gares.push(myData.graph.points[gare]);
+      }
+      updateGares();
   });
+}
+
+function resolveGraph() {
+  if(geoJsonResolveLayer !== undefined) {
+    geoJsonResolveLayer.clearLayers();
+  }
+
+  let url = "/testAlgo?id="+getGraphId();
+
+  getAjax(url, function (data) {
+      let myData = JSON.parse(data);
+      let geoJsonData = myData.path;
+      updateGeoJsonLayer(geoJsonData, "resolve");
+  });
+}
+
+function getGraphId() {
+  let isVoyageur = document.querySelector('[name=voyageur]').checked;
+  let isFret = document.querySelector('[name=fret]').checked;
+
+  return "isFret-"+(isFret?"O":"N")+"_isVoyageur-"+(isVoyageur?"O":"N");
 }
 
 function updateGeoJsonLayer(geoJsonData, layerType = "graph") {
