@@ -4,8 +4,11 @@ let geoJsonGraphLayer;
 let geoJsonGraphLayerOption = {
     onEachFeature: function (feature, layer) {
         layer.bindPopup(
-          `<button class='btn btn-sm btn-primary' onclick='setGare("`+feature.properties.id+`","depart")'>Départ</button>
-          <button class='btn btn-sm btn-success' onclick='setGare("`+feature.properties.id+`","arrive")'>Arrivée</button>`
+          `<div>`+feature.properties.name+`</div>
+          <div>
+          <button class='btn btn-sm btn-primary' onclick='setGare("`+feature.properties.id+`","depart")'>Départ</button>
+          <button class='btn btn-sm btn-success' onclick='setGare("`+feature.properties.id+`","arrive")'>Arrivée</button>
+          </div>`
         );
     },
     pointToLayer: function (feature, latlng) {
@@ -22,7 +25,7 @@ let geoJsonGraphLayerOption = {
 let geoJsonResolveLayer;
 let geoJsonResolveLayerOption = {
     onEachFeature: function (feature, layer) {
-        layer.bindPopup(feature.properties.prop0);
+        layer.bindPopup(feature.properties.name);
     },
     pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, { radius: 6, color: "#42f445", fillColor: "#42f445" });
