@@ -109,14 +109,15 @@ exports.generateGraph = (gares) => {
             graph.successeurs[gareCourante.recordid] = [];
         }
         garesProches.map((a) => {
-            graph.successeurs[gareCourante.recordid].push(a.recordid)
+            if (!graph.successeurs[gareCourante.recordid].indexOf(a.recordid) === -1) {
+                graph.successeurs[gareCourante.recordid].push(a.recordid)
+            }
         });
 
         garesProches.map(gare => {
             if (graph.successeurs[gare.recordid]) {
                 if (!graph.successeurs[gare.recordid].indexOf(gareCourante.recordid) === -1) {
                     graph.successeurs[gare.recordid].push(gareCourante.recordid);
-                    console.log('Aller retour : ' + gare.recordid + ' ' + gareCourante.recordid);
                 }
             } else {
                 graph.successeurs[gare.recordid] = [gareCourante.recordid];
