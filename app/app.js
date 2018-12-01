@@ -39,7 +39,8 @@ app.get('/graph', (req, res) => {
 
   res.send({
     "id": this.generateId(filters),
-    "GeoJSON": geoJsonService.convertGraphToGeoJSON(graphe)
+    "GeoJSON": geoJsonService.convertGraphToGeoJSON(graphe),
+    "graph" : graphe
   });
 
 });
