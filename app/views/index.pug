@@ -1,10 +1,109 @@
 html
   head
     title= title
-    script(src='https://unpkg.com/leaflet@1.3.4/dist/leaflet.js')
-    link(rel='stylesheet',href='https://unpkg.com/leaflet@1.3.4/dist/leaflet.css')
+    link(rel="icon",type="image/png",href="favicon.gif")
+
+    script(src='leaflet/leaflet.js')
+    link(rel='stylesheet',href='leaflet/leaflet.css')
+
+    <!-- script(src='bootstrap/js/bootstrap.min.js') -->
+    link(rel='stylesheet',href='bootstrap/css/bootstrap.min.css')
+
     script(src='scripts/main.js')
     link(rel='stylesheet',href='styles/main.css')
   body
-    #map
+    div(class="container-fluid")
+      #main(class="row")
+        #control.mb-3.col-sm-2
+          .filtres.card.mb-2.box-shadow.border-primary
+            .card-header.text-center
+              h2.display-5 Types de gares
+            .card-body.p-1
+              ul.list-group.list-group-flush
+                li.list-group-item
+                  input.mr-2(
+                    type='checkbox'
+                    name='fret'
+                    checked
+                  )
+                  label(for="fret") Fret
+                li.list-group-item
+                  input.mr-2(
+                    type='checkbox'
+                    name='voyageur'
+                    checked
+                  )
+                  label(for="voyageur") Voyageur
+            button.btn.btn-primary.btn-block(onclick="selectType()") Sélectionner
 
+          .gares.card.mb-2.box-shadow.border-primary
+            .card-header.text-center
+              h2.display-5 Itinéraire
+            .card-body.p-2
+              label(for="selectGareDepart") Gare de départ
+              select#selectGareDepart.form-control(onchange="marquerGare(this.value, 'depart')")
+                option(value="") Sélectionner la gare
+              .arrive
+                label(for="selectGareArrive") Gare d'arrivée
+                select#selectGareArrive.form-control(onchange="marquerGare(this.value, 'arrive')")
+                  option(value="") Sélectionner la gare
+              .algo
+                label(for="selectAlgo") Algo
+                select#selectAlgo.form-control
+                  option(value="") Sélectionner l'algo
+            button.btn.btn-primary.btn-block(onclick="resolveGraph()") Calculer
+            
+            
+        #display(class="col-sm-8")
+          #map
+            
+        #infos(class="col-sm-2")
+          .row
+            .infos.col-sm-12
+              .card.mb-2.box-shadow.border-info
+                .card-header.text-center
+                  h2.display-5 Infos
+                .card-body.p-0.pt-2
+                  h4.card-title.text-center Graphe
+                  table.table.table-hover.table-sm
+                    tbody
+                      tr
+                        td Nombre de gares
+                        td -
+                      tr
+                        td Nombre de liens
+                        td -
+                  h4.card-title.text-center Résolution
+                  table.table.table-hover.table-sm
+                    tbody
+                      tr
+                        td Possible
+                        td -
+                      tr
+                        td Départ
+                        td -
+                      tr
+                        td Arrivée
+                        td -
+                      tr
+                        td Distance
+                        td -
+                      tr
+                        td Poid total
+                        td -
+                      tr
+                        td Algorithme
+                        td -
+                      tr
+                        td Temps de calcul
+                        td -
+            .legende.col-sm-12
+              .card.mb-2.box-shadow.border-info
+                .card-header.text-center
+                  h2.display-5 Légende
+            .a-propos.col-sm-12
+              .card.mb-2.box-shadow.border-info
+                .card-header.text-center
+                  h2.display-5 A Propos
+                .card-body.p-2
+                  p.card-text Fait avec ❤ par Antoine Perrin 👑 et Matthieu Cayet 👑 dans le cadre de leur formation Ingénieur Informatique en alternance à l'école Polytech de Lyon. 👌
