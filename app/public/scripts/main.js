@@ -43,16 +43,28 @@ let gares = [];
 let markerGareDepart = L.marker();
 let markerGareArrive = L.marker();
 
+let selectGareDepartDOM;
+let selectGareArriveDOM;
+let selectAlgoDOM;
+
+let countGaresDOM;
+let countLiensDOM;
+let isPossibleDOM;
+let gareDepartDOM;
+let gareArriveDOM;
+let distanceDOM;
+let poidTotalDOM;
+let resolveAlgoDOM;
+let tempsCalculDOM;
+
 function updateGares() {
-  let selectGareDepart = document.getElementById('selectGareDepart');
-  let selectGareArrive = document.getElementById('selectGareArrive');
 
   // Clean gare selects
-  while (selectGareDepart.childNodes[1]) {
-      selectGareDepart.removeChild(selectGareDepart.childNodes[1]);
+  while (selectGareDepartDOM.childNodes[1]) {
+    selectGareDepartDOM.removeChild(selectGareDepart.childNodes[1]);
   }
-  while (selectGareArrive.childNodes[1]) {
-      selectGareArrive.removeChild(selectGareArrive.childNodes[1]);
+  while (selectGareArriveDOM.childNodes[1]) {
+    selectGareArriveDOM.removeChild(selectGareArrive.childNodes[1]);
   }
 
   map.removeLayer(markerGareDepart);
@@ -74,6 +86,9 @@ function updateGares() {
     // Créer un clone du noeud "option"
     selectGareArrive.appendChild(option.cloneNode(true));
   }
+
+  // Maj count des gares
+  countGaresDOM.textContent = gares.length;
 }
 
 function getAjax(url, success) {
@@ -101,18 +116,26 @@ function initMap(id = 'map') {
 document.addEventListener('DOMContentLoaded', function () {
     initMap();
 
-    getAjax('/testAlgo?id=isFret-N_isVoyageur-O', function (data) {
-        let myData = JSON.parse(data);
-        let geoJsonData = myData.path;
+    selectGareDepartDOM = document.getElementById('selectGareDepart');
+    selectGareArriveDOM = document.getElementById('selectGareArrive');
+    selectAlgoDOM = document.getElementById('selectAlgo');
 
-        updateGeoJsonLayer(geoJsonData, "resolve");
-    });
+    countGaresDOM = document.getElementById('countGares');
+    countLiensDOM = document.getElementById('countLiens');
+    isPossibleDOM = document.getElementById('isPossible');
+    gareDepartDOM = document.getElementById('gareDepart');
+    gareArriveDOM = document.getElementById('gareArrive');
+    distanceDOM = document.getElementById('distance');
+    poidTotalDOM = document.getElementById('poidTotal');
+    resolveAlgoDOM = document.getElementById('resolveAlgo');
+    tempsCalculDOM = document.getElementById('tempsCalcul');
 });
 
 function selectType() {
   if(geoJsonResolveLayer !== undefined) {
     geoJsonResolveLayer.clearLayers();
   }
+  resetInfos();
 
   let isVoyageur = document.querySelector('[name=voyageur]').checked;
   let isFret = document.querySelector('[name=fret]').checked;
@@ -135,13 +158,52 @@ function resolveGraph() {
     geoJsonResolveLayer.clearLayers();
   }
 
-  let url = "/testAlgo?id="+getGraphId();
-
-  getAjax(url, function (data) {
+  let gareDepartId = selectGareDepartDOM.value;
+  let gareArriveId = selectGareArriveDOM.value;
+  let algo = selectAlgoDOM.value;
+  
+  if(gareArriveId != "" && gareDepartId != "") {
+    let url = "/resolve?id="+getGraphId()+"&start="+gareDepartId+"&end="+gareArriveId+"&algo="+algo;
+  
+    getAjax(url, function (data) {
       let myData = JSON.parse(data);
-      let geoJsonData = myData.path;
-      updateGeoJsonLayer(geoJsonData, "resolve");
-  });
+      let geoJsonData = myData.GeoJSON;
+      updateInfos(myData);
+      if(geoJsonData != false) {
+        updateGeoJsonLayer(geoJsonData, "resolve");
+      }
+    });
+  } else {
+    alert("Houston t'as oublié de sélectionner des gares.");
+  }
+}
+
+function updateInfos(data) {
+  resetInfos();
+
+  gareDepartDOM.textContent = selectGareDepartDOM.options[selectGareDepartDOM.selectedIndex].text;
+  gareArriveDOM.textContent = selectGareArriveDOM.options[selectGareArriveDOM.selectedIndex].text;
+  resolveAlgoDOM.textContent = selectAlgoDOM.options[selectAlgoDOM.selectedIndex].text;
+
+  if(data.GeoJSON != false) {
+    let infos = data.info;
+    isPossibleDOM.textContent = "Yes";
+    distanceDOM.textContent = infos.distance;
+    poidTotalDOM.textContent = infos.poids;
+    tempsCalculDOM.textContent = infos.temps;
+  } else {
+    isPossibleDOM.textContent = "Nope";
+  }
+}
+
+function resetInfos() {
+  isPossibleDOM.textContent = "-";
+  gareDepartDOM.textContent = "-";
+  gareArriveDOM.textContent = "-";
+  distanceDOM.textContent = "-";
+  poidTotalDOM.textContent = "-";
+  resolveAlgoDOM.textContent = "-";
+  tempsCalculDOM.textContent = "-";
 }
 
 function getGraphId() {
