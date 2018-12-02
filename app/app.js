@@ -88,15 +88,17 @@ app.get('/testAlgo', (req, res) => {
   let gares = garesService.getGares(filters);
   let graphe = garesService.generateGraph(gares);
 
-  let aStarPath = algoService.aStarPath(graphe, '7c71f00ac4e661e60023a737462beff3ddac885e', 'bb9ff5bc4dd40d9a01ec45106b78ca169ba8f53d');
+  //let aStarPath = algoService.aStarPath(graphe, '7c71f00ac4e661e60023a737462beff3ddac885e', 'bb9ff5bc4dd40d9a01ec45106b78ca169ba8f53d');
   //chemin entre beauvoisin et goncelin
   //let aStarPath = algoService.aStarPath(graphe, '830f890f2af67edca009ec88ad336d0ddd8b63f0', '33bc6acd93fa5e13a9df29f1a05140f9ed873f65');
 
+  let dikjstraPath = algoService.dikjstra(graphe, '708fb117a9aedf9e9874d90cafbfbba81328d707', '47b58580206a3119da0bccb4943c6d782f8118ce')
   let path = false;
-  //res.send(aStarPath.path);
-  if (aStarPath.path) path = geoJsonService.convertGraphToGeoJSON(aStarPath.path);
+  if (dikjstraPath.path) path = geoJsonService.convertGraphToGeoJSON(dikjstraPath.path);
+  //if (aStarPath.path) path = geoJsonService.convertGraphToGeoJSON(aStarPath.path);
   res.send({
-    'astarInfo': aStarPath,
+    //'astarInfo': aStarPath,
+    'dikjstraInfo': dikjstraPath,
     'path': path,
     'graph' : graphe
   });

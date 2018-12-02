@@ -34,22 +34,24 @@ exports.aStarPath = (graph, start, end) => {
 
         tabNeighbour = graph.successeurs[currentNode];
 
-        tabNeighbour.map(neighbour => { //parcours des successeurs
-            if (!closedList[neighbour]) { // si la gare est dans la liste fermée il a déjà été analysé, on le passe
-                if (!openList[neighbour]) { // si la gare n'est pas dans la liste ouverte
-                    openList[neighbour] = {
-                        id: neighbour,
-                        parent: currentNode,
-                        distance: gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[end].coordinates)
-                    }
-                } else {
-                    if (openList[neighbour].distance > gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[end].coordinates)) {
-                        openList[neighbour].parent = currentNode
+        if(tabNeighbour){
+            tabNeighbour.map(neighbour => { //parcours des successeurs
+                if (!closedList[neighbour]) { // si la gare est dans la liste fermée il a déjà été analysé, on le passe
+                    if (!openList[neighbour]) { // si la gare n'est pas dans la liste ouverte
+                        openList[neighbour] = {
+                            id: neighbour,
+                            parent: currentNode,
+                            distance: gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[end].coordinates)
+                        }
+                    } else {
+                        if (openList[neighbour].distance > gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[end].coordinates)) {
+                            openList[neighbour].parent = currentNode
+                        }
                     }
                 }
-            }
 
-        });
+            });
+        }   
     }
 
 
@@ -63,7 +65,76 @@ exports.aStarPath = (graph, start, end) => {
 }
 
 exports.dikjstra = (graph, start, end) => {
+    let openList = {}; //les gares a visiter
+    let closedList = {}; //les gares visitées
+    let isPossible = false;
 
+    let idCurrGare,
+    tabNeighbour;
+
+    // graph.points.forEach(gare => { //toutes les distances à l'infini
+    //     openList[gare] = {
+    //         id: gare,
+    //         parent: null, //pas de parent pour la node de départ
+    //         distance: Infinity
+    //     }
+    // });
+
+    openList[start] = { 
+        id: start,
+        parent: null, 
+        distance: 0
+    };
+
+    while (idCurrGare !== end && Object.keys(openList).length !== 0){
+
+        idCurrGare = getBestDistance(openList);
+
+        if(idCurrGare === end) isPossible = true;
+
+        closedList[idCurrGare] = openList[idCurrGare]; //on le met dans la liste fermée
+        delete openList[idCurrGare]; //on l'enleve de la liste ouverte
+
+        tabNeighbour = graph.successeurs[idCurrGare];
+
+        if(tabNeighbour){
+            tabNeighbour.map(neighbour => { //parcours des successeurs
+                console.log(idCurrGare);
+                console.log(tabNeighbour);
+                console.log(neighbour);
+                if (!closedList[neighbour]) { // si la gare est dans la liste fermée il a déjà été analysé, on le passe
+
+                    let distanceFromStart =
+                        closedList[idCurrGare].distance
+                        + gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[idCurrGare].coordinates);
+
+                    if (!openList[neighbour]) { // si la gare n'est pas dans la liste ouverte
+
+                        openList[neighbour] = {
+                            id: neighbour,
+                            parent: idCurrGare,
+                            distance: distanceFromStart
+                        }
+                    } else {
+                        if (openList[neighbour].distance > distanceFromStart) {
+                            openList[neighbour].parent = idCurrGare
+                        }
+                    }
+                }
+
+            });
+        }
+        
+
+    }
+
+    return {
+        isPossible: isPossible,
+        start: start,
+        end: end,
+        path: generatePath(closedList, start, end, graph),
+        //graph : graph
+    };
 }
 
 /**
