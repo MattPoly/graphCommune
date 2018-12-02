@@ -105,18 +105,21 @@ exports.generateGraph = (gares) => {
 
         distanceMin = distanceMinDefault;
 
+
         if (!graph.successeurs[gareCourante.recordid]){
             graph.successeurs[gareCourante.recordid] = [];
         }
-        garesProches.map((a) => {
-            if (!graph.successeurs[gareCourante.recordid].indexOf(a.recordid) === -1) {
+
+        garesProches.map((a) => { //on ajoute chaque gare proche au successeur
+            if (graph.successeurs[gareCourante.recordid].indexOf(a.recordid) === -1) {
                 graph.successeurs[gareCourante.recordid].push(a.recordid)
             }
         });
 
         garesProches.map(gare => {
             if (graph.successeurs[gare.recordid]) {
-                if (!graph.successeurs[gare.recordid].indexOf(gareCourante.recordid) === -1) {
+
+                if (graph.successeurs[gare.recordid].indexOf(gareCourante.recordid) === -1) {
                     graph.successeurs[gare.recordid].push(gareCourante.recordid);
                 }
             } else {
