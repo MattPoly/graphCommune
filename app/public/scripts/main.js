@@ -3,6 +3,7 @@ let map;
 let geoJsonGraphLayer;
 let geoJsonGraphLayerOption = {
     onEachFeature: function (feature, layer) {
+      if(feature.geometry.type == "Point") {
         layer.bindPopup(
           `<div>`+feature.properties.name+`</div>
           <div>
@@ -10,13 +11,14 @@ let geoJsonGraphLayerOption = {
           <button class='btn btn-sm btn-success' onclick='setGare("`+feature.properties.id+`","arrive")'>Arrivée</button>
           </div>`
         );
+      }
     },
     pointToLayer: function (feature, latlng) {
-        return L.circleMarker(latlng, { radius: 6, color: "#FFA500", fillColor: "#FFA500" });
+        return L.circleMarker(latlng, { radius: 6, color: "#FFA500", fillColor: "#FFA500", zindex: 100});
     },
     style: function(feature) {
       switch (feature.geometry.type) {
-          case 'LineString': return {color: "#007BFF", fillColor: "#007BFF"};
+          case 'LineString': return {color: "#007BFF", fillColor: "#007BFF", zindex: 10};
           default:   return {};
       }
   }
@@ -25,7 +27,9 @@ let geoJsonGraphLayerOption = {
 let geoJsonResolveLayer;
 let geoJsonResolveLayerOption = {
     onEachFeature: function (feature, layer) {
+      if(feature.geometry.type == "Point") {
         layer.bindPopup(feature.properties.name);
+      }
     },
     pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, { radius: 6, color: "#42f445", fillColor: "#42f445" });
