@@ -50,7 +50,8 @@ html
               .algo
                 label(for="selectAlgo") Algo
                 select#selectAlgo.form-control
-                  option(value="") Sélectionner l'algo
+                  option(value="astar") A*
+                  option(value="dikjstra") Dikjstra
             button.btn.btn-primary.btn-block(onclick="resolveGraph()") Calculer
             
             
@@ -69,34 +70,34 @@ html
                     tbody
                       tr
                         td Nombre de gares
-                        td -
+                        td#countGares -
                       tr
                         td Nombre de liens
-                        td -
+                        td#countLiens -
                   h4.card-title.text-center Résolution
                   table.table.table-hover.table-sm
                     tbody
                       tr
                         td Possible
-                        td -
+                        td#isPossible -
                       tr
                         td Départ
-                        td -
+                        td#gareDepart -
                       tr
                         td Arrivée
-                        td -
+                        td#gareArrive -
                       tr
                         td Distance
-                        td -
+                        td#distance -
                       tr
                         td Poid total
-                        td -
+                        td#poidTotal -
                       tr
                         td Algorithme
-                        td -
+                        td#resolveAlgo -
                       tr
                         td Temps de calcul
-                        td -
+                        td#tempsCalcul -
             .legende.col-sm-12
               .card.mb-2.box-shadow.border-info
                 .card-header.text-center

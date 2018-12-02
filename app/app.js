@@ -53,9 +53,30 @@ app.get('/resolve', (req, res) => {
   let gares = garesService.getGares(filters);
   let graphe = garesService.generateGraph(gares);
 
+  // Get Starting point and ending point
+  let start = queries.start;
+  let end = queries.end;
+
+  // Algo
+  let algo = queries.algo;
+  let resolvePath;
+
+  switch (algo) {
+    case "astar" :
+      resolvePath = algoService.aStarPath(graphe, start, end);
+      break;
+    case "dikjstra":
+      resolvePath = algoService.dikjstra(graphe, start, end);
+      break;
+    default:
+      resolvePath = algoService.aStarPath(graphe, start, end);
+  }
+  
+  let GeoJSON = (resolvePath.isPossible) ? geoJsonService.convertGraphToGeoJSON(resolvePath.path) : false;
+
   res.send({
-    "id": this.generateId(filters),
-    "GeoJSON": geoJsonService.convertGraphToGeoJSON(graphe)
+    "info": resolvePath,
+    "GeoJSON": GeoJSON
   });
 
 });
