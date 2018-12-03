@@ -46,30 +46,34 @@ exports.convertGraphToGeoJSON = (graphe = {}) => {
     let gareCourante = {};
     let successeur = {};
     let prop = '';
+    let arcs = [];
 
     let successeursListId = Object.keys(successeursList);
     let successeurs = [];
-    successeursListId.forEach((successeurId) => {
-      gareCourante = points[successeurId];
-      successeurs = successeursList[successeurId];
+    successeursListId.forEach((successeurListId) => {
+      gareCourante = points[successeurListId];
+      successeurs = successeursList[successeurListId];
 
       successeurs.forEach((successeurId) => {
-        successeur = points[successeurId];
-        prop = gareCourante.name + ' - ' + successeur.name;
-        let successeurGeoJson = {
-          "type": "Feature",
-          "geometry": {
-            "type": "LineString",
-            "coordinates": [
-              gareCourante.coordinates,
-              successeur.coordinates
-            ]
-          },
-          "properties": {
-            "prop0": prop
-          }
-        };
-        geoJsonData.features.push(successeurGeoJson);
+        if(arcs.indexOf(successeurListId+"-"+successeurId) == -1 && arcs.indexOf(successeurId+"-"+successeurListId) == -1) {
+          successeur = points[successeurId];
+          prop = gareCourante.name + ' - ' + successeur.name;
+          let successeurGeoJson = {
+            "type": "Feature",
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                gareCourante.coordinates,
+                successeur.coordinates
+              ]
+            },
+            "properties": {
+              "name": prop
+            }
+          };
+          geoJsonData.features.push(successeurGeoJson);
+          arcs.push(successeurListId+"-"+successeurId);
+        }
 
       });
 
