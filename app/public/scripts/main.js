@@ -192,9 +192,9 @@ function updateInfos(data) {
   if(data.GeoJSON != false) {
     let infos = data.info;
     isPossibleDOM.textContent = "Yes";
-    distanceDOM.textContent = infos.distance;
+    distanceDOM.textContent = `${Math.floor(infos.distance)} km`;
     poidTotalDOM.textContent = infos.poids;
-    tempsCalculDOM.textContent = infos.temps;
+    tempsCalculDOM.textContent = `${infos.temps} ms`;
   } else {
     isPossibleDOM.textContent = "Nope";
   }

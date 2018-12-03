@@ -30,10 +30,10 @@ app.get('/', (req, res) => {
 
 app.get('/graph', (req, res) => {
   let filters = req.query;
-  console.log( filters);
+  //console.log( filters);
 
   let gares = garesService.getGares(filters);
-  console.log("gares:" + gares.length);
+  //console.log("gares:" + gares.length);
 
   let graphe = garesService.generateGraph(gares);
 

@@ -54,11 +54,12 @@ exports.getGares = (filters) => {
             isFret = (data.fields.fret === filters.isFret);
         }
 
+
         return data.geometry !== undefined
             && data.fields.commune !== undefined
             && data.fields.libelle_gare !== undefined
-            && isVoyageur
             && isFret
+            && isVoyageur
             && visitedCommune[data.fields.commune] === data.recordid;
     });
 
@@ -101,7 +102,7 @@ exports.generateGraph = (gares) => {
                 }
             });
             distanceMin = distanceMin + 5;
-        } while (garesProches.length === 0);
+        } while (garesProches.length < 4);
 
         distanceMin = distanceMinDefault;
 

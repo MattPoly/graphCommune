@@ -27,22 +27,25 @@ exports.aStarPath = (graph, start, end) => {
         distanceToEnd: gareService.calculDistance(graph.points[start].coordinates, graph.points[end].coordinates)
     };
 
-    while (Object.keys(openList).length !== 0 /*&& currentNode !== end*/) { // tant qu'il reste des options a explorer et que l'on a pas atteint la destination
+    while (Object.keys(openList).length !== 0 && currentNode !== end) { // tant qu'il reste des options a explorer et que l'on a pas atteint la destination
         currentNode = getBestHeuristique(openList);
         if(currentNode === end) isPossible = true;
 
         closedList[currentNode] = openList[currentNode]; //on le met dans la liste fermée
         delete openList[currentNode]; //on l'enleve de la liste ouverte
 
-        tabNeighbour = graph.successeurs[currentNode];
+        tabNeighbour = graph.successeurs[currentNode]; // récupération des voisins
 
         if(tabNeighbour){
             tabNeighbour.map(neighbour => { //parcours des successeurs
                 if (!closedList[neighbour]) { // si la gare est dans la liste fermée il a déjà été analysé, on le passe
+                    
                     //sauvegarde de la longueur du chemin
                     let distance = closedList[currentNode].distance + gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[currentNode].coordinates); 
+                    
                     // calcul de l'heuristique (distance jusqu'a la fin)
                     let distanceToEnd = gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[end].coordinates); 
+                    
                     if (!openList[neighbour]) { // si la gare n'est pas dans la liste ouverte
                         openList[neighbour] = {
                             id: neighbour,
@@ -63,19 +66,18 @@ exports.aStarPath = (graph, start, end) => {
         }   
     }
 
-    let path = generatePath(closedList, start, end, graph);
+    let path = generatePath(closedList, start, end, graph); //on reconstruit le chemin
     let length = false;
     if (closedList[end]) length = closedList[end].distance;
 
-    let timerEnd = Date.now() - timerStart;
+    let timerEnd = Date.now() - timerStart; //calcul du temms écoulé en milliseconde
     return {
         isPossible : isPossible,
         start : start,
         end : end,
         path : path,
-        msTimer : timerEnd,
-        length : length
-        //graph : graph
+        temps : timerEnd,
+        distance : length
     };
 }
 
@@ -105,7 +107,7 @@ exports.dikjstra = (graph, start, end) => {
         distance: 0
     };
 
-    while (/*idCurrGare !== end && */Object.keys(openList).length !== 0){
+    while (Object.keys(openList).length !== 0){
 
         idCurrGare = getBestDistance(openList);
 
@@ -118,9 +120,6 @@ exports.dikjstra = (graph, start, end) => {
 
         if(tabNeighbour){
             tabNeighbour.map(neighbour => { //parcours des successeurs
-                // console.log(idCurrGare);
-                // console.log(tabNeighbour);
-                // console.log(neighbour);
                 if (!closedList[neighbour]) { // si la gare est dans la liste fermée il a déjà été analysé, on le passe
 
                     let distanceFromStart =
@@ -144,8 +143,6 @@ exports.dikjstra = (graph, start, end) => {
 
             });
         }
-        
-
     }
 
     let path = generatePath(closedList, start, end, graph);
@@ -158,8 +155,8 @@ exports.dikjstra = (graph, start, end) => {
         start: start,
         end: end,
         path: path,
-        msTimer : timerEnd,
-        length : length
+        temps : timerEnd,
+        distance : length
         //graph : graph
     };
 }
@@ -196,8 +193,6 @@ function generatePath(closedList, start, end, graph){
 
     if(closedList[end]){
         let currNode = closedList[end];
-        console.log('distance : ' + closedList[end].distance);
-        console.log('distance : ' + closedList[end].distanceToEnd);
         while(currNode !== undefined){ //on itère jusqu'à remonter au parent
             path.points[currNode.id] = graph.points[currNode.id];
             if (futurFils) path.successeurs[currNode.id] = [futurFils];
