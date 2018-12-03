@@ -5,7 +5,7 @@ const gareService = require('./garesService.js');
 
 /**
  * 
- * @param {*} map ensemble des points et siuccesseurs à analyser 
+ * @param {*} map ensemble des points et successeurs à analyser 
  * @param {*} start id du point de départ
  * @param {*} end id du point à, atteindre
  * @returns ensemble des points constituant le plus court chemin | null si impossible
@@ -92,14 +92,6 @@ exports.dikjstra = (graph, start, end) => {
 
     let idCurrGare,
     tabNeighbour;
-
-    // graph.points.forEach(gare => { //toutes les distances à l'infini
-    //     openList[gare] = {
-    //         id: gare,
-    //         parent: null, //pas de parent pour la node de départ
-    //         distance: Infinity
-    //     }
-    // });
 
     openList[start] = { 
         id: start,
