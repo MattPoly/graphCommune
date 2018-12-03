@@ -11,6 +11,7 @@ const gareService = require('./garesService.js');
  * @returns ensemble des points constituant le plus court chemin | null si impossible
  */
 exports.aStarPath = (graph, start, end) => {
+    let timerStart = Date.now();
     
     let openList = {}; // les options à epxlorer
     let closedList = {}; // les options déjà explorer
@@ -22,11 +23,12 @@ exports.aStarPath = (graph, start, end) => {
     openList[start] = { //on met l'id de la node de départ de la lsite ouverte afin d'initialiser l'itération
         id: start,
         parent: null, //pas de parent pour la node de départ
-        distance: gareService.calculDistance(graph.points[start].coordinates, graph.points[end].coordinates)
+        distance: 0,
+        distanceToEnd: gareService.calculDistance(graph.points[start].coordinates, graph.points[end].coordinates)
     };
 
-    while (Object.keys(openList).length !== 0 && currentNode !== end) { // tant qu'il reste des options a explorer et que l'on a pas atteint la destination
-        currentNode = getBestDistance(openList);
+    while (Object.keys(openList).length !== 0 /*&& currentNode !== end*/) { // tant qu'il reste des options a explorer et que l'on a pas atteint la destination
+        currentNode = getBestHeuristique(openList);
         if(currentNode === end) isPossible = true;
 
         closedList[currentNode] = openList[currentNode]; //on le met dans la liste fermée
@@ -37,15 +39,22 @@ exports.aStarPath = (graph, start, end) => {
         if(tabNeighbour){
             tabNeighbour.map(neighbour => { //parcours des successeurs
                 if (!closedList[neighbour]) { // si la gare est dans la liste fermée il a déjà été analysé, on le passe
+                    //sauvegarde de la longueur du chemin
+                    let distance = closedList[currentNode].distance + gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[currentNode].coordinates); 
+                    // calcul de l'heuristique (distance jusqu'a la fin)
+                    let distanceToEnd = gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[end].coordinates); 
                     if (!openList[neighbour]) { // si la gare n'est pas dans la liste ouverte
                         openList[neighbour] = {
                             id: neighbour,
                             parent: currentNode,
-                            distance: gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[end].coordinates)
+                            distance: distance,
+                            distanceToEnd : distanceToEnd
+
                         }
-                    } else {
-                        if (openList[neighbour].distance > gareService.calculDistance(graph.points[neighbour].coordinates, graph.points[end].coordinates)) {
+                    } else { //s'il a déjà été testé, on repère si la distance s'améliore
+                        if (openList[neighbour].distance > distance) {
                             openList[neighbour].parent = currentNode
+                            openList[neighbour].distance = distance;
                         }
                     }
                 }
@@ -54,17 +63,27 @@ exports.aStarPath = (graph, start, end) => {
         }   
     }
 
+    let path = generatePath(closedList, start, end, graph);
+    let length = false;
+    if (closedList[end]) length = closedList[end].distance;
 
+    let timerEnd = Date.now() - timerStart;
     return {
         isPossible : isPossible,
         start : start,
         end : end,
-        path : generatePath(closedList, start, end, graph),
+        path : path,
+        msTimer : timerEnd,
+        length : length
         //graph : graph
     };
 }
 
 exports.dikjstra = (graph, start, end) => {
+
+    let timerStart = Date.now();
+
+
     let openList = {}; //les gares a visiter
     let closedList = {}; //les gares visitées
     let isPossible = false;
@@ -86,7 +105,7 @@ exports.dikjstra = (graph, start, end) => {
         distance: 0
     };
 
-    while (idCurrGare !== end && Object.keys(openList).length !== 0){
+    while (/*idCurrGare !== end && */Object.keys(openList).length !== 0){
 
         idCurrGare = getBestDistance(openList);
 
@@ -99,9 +118,9 @@ exports.dikjstra = (graph, start, end) => {
 
         if(tabNeighbour){
             tabNeighbour.map(neighbour => { //parcours des successeurs
-                console.log(idCurrGare);
-                console.log(tabNeighbour);
-                console.log(neighbour);
+                // console.log(idCurrGare);
+                // console.log(tabNeighbour);
+                // console.log(neighbour);
                 if (!closedList[neighbour]) { // si la gare est dans la liste fermée il a déjà été analysé, on le passe
 
                     let distanceFromStart =
@@ -118,6 +137,7 @@ exports.dikjstra = (graph, start, end) => {
                     } else {
                         if (openList[neighbour].distance > distanceFromStart) {
                             openList[neighbour].parent = idCurrGare
+                            openList[neighbour].distance = distanceFromStart;
                         }
                     }
                 }
@@ -128,11 +148,18 @@ exports.dikjstra = (graph, start, end) => {
 
     }
 
+    let path = generatePath(closedList, start, end, graph);
+    let timerEnd = Date.now() - timerStart;
+    let length = false;
+    if(closedList[end]) length = closedList[end].distance;
+
     return {
         isPossible: isPossible,
         start: start,
         end: end,
-        path: generatePath(closedList, start, end, graph),
+        path: path,
+        msTimer : timerEnd,
+        length : length
         //graph : graph
     };
 }
@@ -150,6 +177,15 @@ function getBestDistance(openList) {
     return lowestDistanceGare.id;
 }
 
+function getBestHeuristique(openList) {
+
+    let lowestDistanceGare = openList[Object.keys(openList)[0]];
+    Object.keys(openList).map(gareKey => {
+        if (openList[gareKey].distance + openList[gareKey].distanceToEnd < lowestDistanceGare.distance + lowestDistanceGare.distanceToEnd) lowestDistanceGare = openList[gareKey];
+    });
+    return lowestDistanceGare.id;
+}
+
 //genere le sous graph de chemin
 function generatePath(closedList, start, end, graph){
     let path = {
@@ -160,6 +196,8 @@ function generatePath(closedList, start, end, graph){
 
     if(closedList[end]){
         let currNode = closedList[end];
+        console.log('distance : ' + closedList[end].distance);
+        console.log('distance : ' + closedList[end].distanceToEnd);
         while(currNode !== undefined){ //on itère jusqu'à remonter au parent
             path.points[currNode.id] = graph.points[currNode.id];
             if (futurFils) path.successeurs[currNode.id] = [futurFils];
