@@ -3,7 +3,7 @@
 const express = require('express');
 
 // Constants
-const PORT = 80;
+const PORT = process.env.PORT || '8000';
 const HOST = '0.0.0.0';
 
 // App
@@ -142,6 +142,8 @@ exports.generateFilters = (id) => {
   }
   return filters;
 }
+
+app.set('port', PORT);
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
